@@ -32,3 +32,19 @@ func TestNetwork_ChainID(t *testing.T) {
 		t.Errorf("testnet chainID = %d, want 421614", Testnet.SignatureChainID())
 	}
 }
+
+func TestNetwork_UnknownDefaultsToMainnet(t *testing.T) {
+	n := Network(99)
+	if n.HTTPURL() != Mainnet.HTTPURL() {
+		t.Errorf("HTTPURL = %q, want mainnet", n.HTTPURL())
+	}
+	if n.WSURL() != Mainnet.WSURL() {
+		t.Errorf("WSURL = %q, want mainnet", n.WSURL())
+	}
+	if n.SignatureChainID() != Mainnet.SignatureChainID() {
+		t.Errorf("SignatureChainID = %d, want mainnet", n.SignatureChainID())
+	}
+	if n.String() != "mainnet" {
+		t.Errorf("String = %q, want mainnet", n.String())
+	}
+}

@@ -1,5 +1,10 @@
 package hyperliquid
 
+// Network identifies which Hyperliquid environment to talk to.
+//
+// The zero value is Mainnet, so an uninitialized hyperliquid.Config{} defaults
+// to mainnet. Any value other than Testnet is treated as Mainnet by HTTPURL,
+// WSURL, SignatureChainID, and String.
 type Network int
 
 const (
