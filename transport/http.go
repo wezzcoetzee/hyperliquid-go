@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+const maxResponseBytes = 1 << 20 // 1 MiB cap on response bodies (success and error)
+
 // HTTP is the minimum surface the SDK needs to make a JSON POST.
 type HTTP interface {
 	PostJSON(ctx context.Context, path string, body any, out any) error
@@ -25,7 +27,8 @@ type DefaultHTTP struct {
 }
 
 // NewDefaultHTTP returns a DefaultHTTP. If client is nil, a *http.Client with a
-// 30-second timeout is used.
+// 30-second timeout is used as a backstop; callers should rely on ctx deadlines
+// for per-request timing. The http.Client is used as provided and not mutated.
 func NewDefaultHTTP(baseURL string, client *http.Client) *DefaultHTTP {
 	if client == nil {
 		client = &http.Client{Timeout: 30 * time.Second}
@@ -41,7 +44,7 @@ func (h *DefaultHTTP) PostJSON(ctx context.Context, path string, body any, out a
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequestWithContext(ctx, "POST", h.baseURL+path, bytes.NewReader(buf))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, h.baseURL+path, bytes.NewReader(buf))
 	if err != nil {
 		return err
 	}
@@ -51,7 +54,7 @@ func (h *DefaultHTTP) PostJSON(ctx context.Context, path string, body any, out a
 		return err
 	}
 	defer resp.Body.Close()
-	respBody, err := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseBytes))
 	if err != nil {
 		return err
 	}
