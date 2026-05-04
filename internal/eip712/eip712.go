@@ -1,11 +1,12 @@
 // Package eip712 implements the typed-data hashing scheme of EIP-712.
 //
 // Scope: it covers the value types Hyperliquid signing needs — string, bytes,
-// fixed-size byte arrays (e.g. bytes32), address, bool, integer types
-// (uint*/int*), nested structs, and homogeneous arrays. It does NOT implement
-// every corner of EIP-712 (e.g. dynamic-bytes-of-bytes, salts beyond the
-// optional Domain.Salt). The output of HashTypedData on the canonical "Mail"
-// example matches the spec digest, so the typed-encoding rules are correct.
+// fixed-size byte arrays bytes1..bytes32 (length-validated), address (length-
+// validated to 20 bytes), bool, unsigned integer types (uint*/int* — negative
+// values are rejected), nested structs, and homogeneous arrays. Salts are
+// supported via Domain.Salt routed through the bytes32 field.
+//
+// HashTypedData(...) of the canonical "Mail" example matches the spec digest.
 package eip712
 
 import (
@@ -162,9 +163,16 @@ func encodeValue(t string, v any, types Types) ([]byte, error) {
 		}
 		return keccak(b), nil
 	case strings.HasPrefix(t, "bytes"):
+		size, err := parseBytesN(t)
+		if err != nil {
+			return nil, err
+		}
 		b, ok := v.([]byte)
 		if !ok {
 			return nil, fmt.Errorf("expected []byte for %s", t)
+		}
+		if len(b) != size {
+			return nil, fmt.Errorf("eip712: %s expects %d bytes, got %d", t, size, len(b))
 		}
 		return leftPad32(b), nil
 	case t == "address":
@@ -176,6 +184,9 @@ func encodeValue(t string, v any, types Types) ([]byte, error) {
 		b, err := hexDecode(s)
 		if err != nil {
 			return nil, err
+		}
+		if len(b) != 20 {
+			return nil, fmt.Errorf("eip712: address must be 20 bytes, got %d", len(b))
 		}
 		return leftPad32(b), nil
 	case t == "bool":
@@ -201,6 +212,9 @@ func encodeValue(t string, v any, types Types) ([]byte, error) {
 			n = big.NewInt(int64(x))
 		default:
 			return nil, fmt.Errorf("unsupported int type %T", v)
+		}
+		if n.Sign() < 0 {
+			return nil, fmt.Errorf("eip712: negative %s not supported (Hyperliquid uses unsigned values)", t)
 		}
 		out := make([]byte, 32)
 		nb := n.Bytes()
@@ -231,6 +245,27 @@ func encodeValue(t string, v any, types Types) ([]byte, error) {
 		}
 		return nil, fmt.Errorf("unknown type %q", t)
 	}
+}
+
+// parseBytesN parses a "bytesN" type string (1 ≤ N ≤ 32) into N. It rejects
+// inputs like "bytesfoo" or "bytes33" so they fall through to the unknown-type
+// error path instead of silently truncating.
+func parseBytesN(t string) (int, error) {
+	if len(t) <= len("bytes") {
+		return 0, fmt.Errorf("eip712: invalid type %q", t)
+	}
+	rest := t[len("bytes"):]
+	n := 0
+	for _, c := range rest {
+		if c < '0' || c > '9' {
+			return 0, fmt.Errorf("eip712: invalid type %q", t)
+		}
+		n = n*10 + int(c-'0')
+	}
+	if n < 1 || n > 32 {
+		return 0, fmt.Errorf("eip712: invalid type %q (N must be 1..32)", t)
+	}
+	return n, nil
 }
 
 func leftPad32(b []byte) []byte {
