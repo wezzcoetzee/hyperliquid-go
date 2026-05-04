@@ -10,6 +10,9 @@ type APIError struct {
 }
 
 func (e *APIError) Error() string {
+	if e.Type == "" {
+		return fmt.Sprintf("hyperliquid: api error %d: %s", e.Status, e.Body)
+	}
 	return fmt.Sprintf("hyperliquid: api error %d (%s): %s", e.Status, e.Type, e.Body)
 }
 
@@ -28,7 +31,12 @@ type SignError struct {
 	Err error
 }
 
-func (e *SignError) Error() string { return "hyperliquid: sign error: " + e.Err.Error() }
+func (e *SignError) Error() string {
+	if e.Err == nil {
+		return "hyperliquid: sign error"
+	}
+	return "hyperliquid: sign error: " + e.Err.Error()
+}
 func (e *SignError) Unwrap() error { return e.Err }
 
 // WSError represents a WebSocket protocol error.
