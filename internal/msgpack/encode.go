@@ -1,18 +1,21 @@
 // Package msgpack implements a minimal deterministic msgpack encoder for
-// Hyperliquid action shapes. It is NOT a general-purpose msgpack library —
-// it covers only the value types Hyperliquid actions use (string, signed/
-// unsigned ints, bool, nil, []byte, []any, OrderedMap) and the smallest
-// representation per the spec, with map-key order matching insertion order.
+// Hyperliquid action shapes. It is NOT a general-purpose msgpack library.
 //
-// Use OrderedMap when key ordering matters for hashing parity. The
-// map[string]any path sorts keys and is provided only for non-action use.
+// Supported value types: nil, bool, string, []byte, int, int64, uint64,
+// []any, *OrderedMap. Any other type (including float64, int32, uint32,
+// uint8, map[string]any) returns an error.
+//
+// All output uses the smallest representation per the msgpack spec, with
+// big-endian multi-byte integers. Maps are encoded in OrderedMap insertion
+// order, which is what the TS SDK produces for object literals — using a
+// regular Go map would give nondeterministic byte output and break signing
+// parity, so map[string]any is deliberately not supported.
 package msgpack
 
 import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"sort"
 )
 
 // OrderedMap preserves insertion order so encoded output matches TS object
@@ -80,22 +83,6 @@ func encode(buf []byte, v any) ([]byte, error) {
 		for _, k := range x.keys {
 			buf = encodeString(buf, k)
 			buf, err = encode(buf, x.values[k])
-			if err != nil {
-				return nil, err
-			}
-		}
-		return buf, nil
-	case map[string]any:
-		keys := make([]string, 0, len(x))
-		for k := range x {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		buf = encodeMapHeader(buf, len(keys))
-		var err error
-		for _, k := range keys {
-			buf = encodeString(buf, k)
-			buf, err = encode(buf, x[k])
 			if err != nil {
 				return nil, err
 			}
