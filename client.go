@@ -1,6 +1,8 @@
 package hyperliquid
 
 import (
+	"context"
+	"errors"
 	"net/http"
 
 	"github.com/wezzcoetzee/hyperliquid/exchange"
@@ -9,9 +11,10 @@ import (
 	"github.com/wezzcoetzee/hyperliquid/ws"
 )
 
-// Signer is a placeholder for the signing interface, filled in by Plan 02.
-// Once defined, hyperliquid.Config.Signer will hold a signer.Signer rather
-// than this empty interface.
+// Signer is a placeholder until Plan 02 introduces the real signing interface
+// in a separate package. Callers should NOT rely on the current empty-interface
+// shape; once Plan 02 lands, Config.Signer will require methods (e.g., Address,
+// SignTypedData). Treat Config.Signer as an unstable field for now.
 type Signer interface{}
 
 // Config controls how a Client is constructed. The zero value has Network==Mainnet
@@ -31,6 +34,7 @@ type Config struct {
 	BaseURL string
 
 	// WSURL overrides Network.WSURL(). Used for tests and proxies.
+	// Currently accepted but unused; wired into the WebSocket client in Plan 05.
 	WSURL string
 }
 
@@ -52,11 +56,29 @@ func New(cfg Config) (*Client, error) {
 	if baseURL == "" {
 		baseURL = cfg.Network.HTTPURL()
 	}
-	httpTr := transport.NewDefaultHTTP(baseURL, cfg.HTTP)
+	httpTr := &wrappingHTTP{inner: transport.NewDefaultHTTP(baseURL, cfg.HTTP)}
 	return &Client{
 		Network:       cfg.Network,
 		Info:          &info.Client{HTTP: httpTr},
 		Exchange:      &exchange.Client{HTTP: httpTr},
 		Subscriptions: &ws.Client{},
 	}, nil
+}
+
+// wrappingHTTP adapts a transport.HTTP to convert *transport.TransportAPIError
+// into the public *APIError type at the package boundary.
+type wrappingHTTP struct {
+	inner transport.HTTP
+}
+
+func (w *wrappingHTTP) PostJSON(ctx context.Context, path string, body any, out any) error {
+	err := w.inner.PostJSON(ctx, path, body, out)
+	if err == nil {
+		return nil
+	}
+	var tErr *transport.TransportAPIError
+	if errors.As(err, &tErr) {
+		return &APIError{Status: tErr.Status, Body: tErr.Body}
+	}
+	return err
 }

@@ -2,6 +2,7 @@ package hyperliquid
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -37,5 +38,23 @@ func TestClient_InfoMeta_RoundTrip(t *testing.T) {
 	}
 	if len(meta.Universe) != 1 || meta.Universe[0].Name != "BTC" {
 		t.Fatalf("unexpected: %+v", meta)
+	}
+}
+
+func TestClient_APIError_Wrapped(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(500)
+		_, _ = w.Write([]byte("boom"))
+	}))
+	defer srv.Close()
+
+	c, _ := New(Config{Network: Testnet, BaseURL: srv.URL})
+	_, err := c.Info.Meta(context.Background())
+	var apiErr *APIError
+	if !errors.As(err, &apiErr) {
+		t.Fatalf("expected *APIError, got %T: %v", err, err)
+	}
+	if apiErr.Status != 500 {
+		t.Errorf("Status = %d", apiErr.Status)
 	}
 }
