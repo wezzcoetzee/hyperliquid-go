@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"testing"
 
+	ethcrypto "github.com/ethereum/go-ethereum/crypto"
+	"github.com/wezzcoetzee/hyperliquid/internal/eip712"
 	"github.com/wezzcoetzee/hyperliquid/signer"
 )
 
@@ -101,5 +103,74 @@ func TestPrivKey_SignsConsistently(t *testing.T) {
 	}
 	if a != b {
 		t.Fatal("signature is not deterministic")
+	}
+}
+
+func TestPrivKey_RecoveryRoundTrip(t *testing.T) {
+	s, _ := New("0x0000000000000000000000000000000000000000000000000000000000000001")
+	domain := signer.Domain{
+		Name:              "Exchange",
+		Version:           "1",
+		ChainID:           1337,
+		VerifyingContract: "0x0000000000000000000000000000000000000000",
+	}
+	types := signer.Types{
+		"EIP712Domain": {
+			{Name: "name", Type: "string"},
+			{Name: "version", Type: "string"},
+			{Name: "chainId", Type: "uint256"},
+			{Name: "verifyingContract", Type: "address"},
+		},
+		"Agent": {
+			{Name: "source", Type: "string"},
+			{Name: "connectionId", Type: "bytes32"},
+		},
+	}
+	cid := make([]byte, 32)
+	cid[0] = 0x42
+
+	sig, err := s.SignTypedData(context.Background(), domain, types, "Agent", map[string]any{
+		"source":       "a",
+		"connectionId": cid,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Re-derive the typed-data hash so we can recover the signer.
+	eipDomain := eip712.Domain{Name: "Exchange", Version: "1", ChainID: 1337, VerifyingContract: "0x0000000000000000000000000000000000000000"}
+	eipTypes := eip712.Types{
+		"EIP712Domain": {
+			{Name: "name", Type: "string"},
+			{Name: "version", Type: "string"},
+			{Name: "chainId", Type: "uint256"},
+			{Name: "verifyingContract", Type: "address"},
+		},
+		"Agent": {
+			{Name: "source", Type: "string"},
+			{Name: "connectionId", Type: "bytes32"},
+		},
+	}
+	hash, err := eip712.HashTypedData(eipDomain, eipTypes, "Agent", map[string]any{
+		"source":       "a",
+		"connectionId": cid,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Reconstruct the 65-byte signature go-ethereum expects (V is 0/1, not 27/28).
+	var raw [65]byte
+	copy(raw[0:32], sig.R[:])
+	copy(raw[32:64], sig.S[:])
+	raw[64] = sig.V - 27
+
+	pub, err := ethcrypto.SigToPub(hash, raw[:])
+	if err != nil {
+		t.Fatalf("SigToPub: %v", err)
+	}
+	recovered := ethcrypto.PubkeyToAddress(*pub)
+	if recovered != s.Address() {
+		t.Fatalf("recovered %x, want %x", recovered, s.Address())
 	}
 }
