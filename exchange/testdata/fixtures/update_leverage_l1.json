@@ -1,0 +1,17 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "updateLeverage",
+    "asset": 0,
+    "isCross": true,
+    "leverage": 10
+  },
+  "actionHash": "0xe69c035a0297dd24d9b288c3e8509ae251baf7bf43a43b895327a2cab098389e",
+  "signature": {
+    "r": "0x35ed02281d938f18dd4284d0d44a556e79b0c900a6d8abed2d212bd26a26901e",
+    "s": "0x6b99ef4b6cc36ab1118caa40e93e5b50215cdd5197f7f058d889d1f03f8ca1a9",
+    "v": 27
+  },
+  "userSigned": null
+}

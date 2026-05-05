@@ -1,0 +1,20 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "cancelByCloid",
+    "cancels": [
+      {
+        "asset": 0,
+        "cloid": "0xdeadbeef00000000000000000000000000000000000000000000000000000001"
+      }
+    ]
+  },
+  "actionHash": "0x96c12f048bf14b0d8fe9e3f59cbfe4cb6f956832f17a4543c8dce9bc4ceba2c8",
+  "signature": {
+    "r": "0xbf57961b6a5914b78365969c6931a46d2cf20aecc6f2986fa8b4b6c20dd65e29",
+    "s": "0x65097a4a696766b68eabbc8eaaab7641d36e156e93eccdc13bde4418f2063c7a",
+    "v": 27
+  },
+  "userSigned": null
+}

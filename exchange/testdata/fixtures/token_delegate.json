@@ -1,0 +1,23 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "tokenDelegate",
+    "signatureChainId": "0xa4b1",
+    "hyperliquidChain": "Mainnet",
+    "validator": "0x0000000000000000000000000000000000000005",
+    "wei": 1000000000000000000,
+    "isUndelegate": false,
+    "nonce": 1700000000000
+  },
+  "actionHash": null,
+  "signature": {
+    "r": "0x7352c5254cda68dcc2451319cae432891753d8c1c86187f733ff3e15b677ca68",
+    "s": "0x7a99e2c6660b994c274706a5e00a74a9a06b7411468085c39e67235c5563651f",
+    "v": 28
+  },
+  "userSigned": {
+    "type": "HyperliquidTransaction:TokenDelegate",
+    "chainId": 42161
+  }
+}

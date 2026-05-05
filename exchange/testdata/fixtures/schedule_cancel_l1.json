@@ -1,0 +1,15 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "scheduleCancel",
+    "time": 1700000060000
+  },
+  "actionHash": "0x543d84c42876132614aca907b0dbd95399b942229d79e0f1c5eb81f1592e2ddf",
+  "signature": {
+    "r": "0xb0329d8376553f7372fdd0da96b7e854fc959dd1116b87b0ad3d6b4e58ae3149",
+    "s": "0x3079629b08fb38b66e548c84d3b26d0c1a4b18fc02692c0154a3fb44450540de",
+    "v": 28
+  },
+  "userSigned": null
+}

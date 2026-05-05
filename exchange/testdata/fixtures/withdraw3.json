@@ -1,0 +1,22 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "withdraw3",
+    "signatureChainId": "0xa4b1",
+    "hyperliquidChain": "Mainnet",
+    "destination": "0x0000000000000000000000000000000000000002",
+    "amount": "5",
+    "time": 1700000000000
+  },
+  "actionHash": null,
+  "signature": {
+    "r": "0x4eb722d1d729cc45ad297260aea06b3ba9fc5728eed9dc0f9d619cc56c0c29d3",
+    "s": "0x77cab122dd63998528d4e458c4f85ea08f19f27b93db4238f013fb6698f0da72",
+    "v": 28
+  },
+  "userSigned": {
+    "type": "HyperliquidTransaction:Withdraw",
+    "chainId": 42161
+  }
+}

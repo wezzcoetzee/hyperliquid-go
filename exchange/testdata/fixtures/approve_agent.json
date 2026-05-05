@@ -1,0 +1,22 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "approveAgent",
+    "signatureChainId": "0xa4b1",
+    "hyperliquidChain": "Mainnet",
+    "agentAddress": "0x0000000000000000000000000000000000000003",
+    "agentName": "TestAgent",
+    "nonce": 1700000000000
+  },
+  "actionHash": null,
+  "signature": {
+    "r": "0x6b4df9fa7e80c9564af752a3bd3d7157a1726bd2852e0f65a2cb7af31278473c",
+    "s": "0x2afc344b718ece0d296625d054573d9f637ad5c848443dd8a7915ca9b7ac5108",
+    "v": 27
+  },
+  "userSigned": {
+    "type": "HyperliquidTransaction:ApproveAgent",
+    "chainId": 42161
+  }
+}

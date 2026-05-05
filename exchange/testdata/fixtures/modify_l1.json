@@ -1,0 +1,27 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "modify",
+    "oid": 999,
+    "order": {
+      "a": 0,
+      "b": true,
+      "p": "31000",
+      "s": "0.2",
+      "r": false,
+      "t": {
+        "limit": {
+          "tif": "Gtc"
+        }
+      }
+    }
+  },
+  "actionHash": "0xe207c8dfdad10fc4613a5f13d71347b826562bc89c8769a6b7b9318726231956",
+  "signature": {
+    "r": "0x1c6581d25d5b654314d524ba88973c84975f871d4186620bdb8d26d2cf7d20ff",
+    "s": "0x1f455ea2d44af860753ad28d2be1423630fc0d2464eea659666007b43d6aa3e2",
+    "v": 28
+  },
+  "userSigned": null
+}

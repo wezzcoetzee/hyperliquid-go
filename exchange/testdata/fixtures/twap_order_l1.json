@@ -1,0 +1,22 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "twapOrder",
+    "twap": {
+      "a": 0,
+      "b": true,
+      "s": "1.0",
+      "r": false,
+      "m": 5,
+      "t": false
+    }
+  },
+  "actionHash": "0xfcb45cef0aff9b5344ab15b9ddbd757c97c85342be58896d2c6e6e22c7bcdf48",
+  "signature": {
+    "r": "0x945d4aaf3e3e2ca5fad43d512fdd1db7100fb48edd1183e28071888df68fe2cf",
+    "s": "0x44dee52274760fbc110ee4a693c3659bea39d38653be4226b78c7aafd5a63fe1",
+    "v": 28
+  },
+  "userSigned": null
+}

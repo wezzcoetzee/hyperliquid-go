@@ -1,0 +1,17 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "updateIsolatedMargin",
+    "asset": 0,
+    "isBuy": true,
+    "ntli": 1000000
+  },
+  "actionHash": "0xaab953f3d8c7aee3815e345292be5a968a253ba9848bf013984e97a87bdc60d4",
+  "signature": {
+    "r": "0xf37025f788912a966abb1f46a3a540c9acfad5edabfdb53cf694cc704273ec4d",
+    "s": "0x136e470e29bc6beaedcddbfe8322cea46be42536e8a5cc432b52c8043d83b668",
+    "v": 28
+  },
+  "userSigned": null
+}
