@@ -1,0 +1,20 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "cancel",
+    "cancels": [
+      {
+        "a": 0,
+        "o": 12345
+      }
+    ]
+  },
+  "actionHash": "0xa1cb188de2cd5e1f2684211f96d83f1b05541001e55eb2e98192f4d87623d36b",
+  "signature": {
+    "r": "0x2d6f747ece0eee40c5b85cffd04bdb7b2c7a9bd205415c25723c16bb4aa83096",
+    "s": "0x2f836b827d313f1fda7795b5916d58266dc2291ea82e9e12761aaa8ce71881de",
+    "v": 27
+  },
+  "userSigned": null
+}

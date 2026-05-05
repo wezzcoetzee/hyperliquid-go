@@ -1,0 +1,22 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "usdSend",
+    "signatureChainId": "0xa4b1",
+    "hyperliquidChain": "Mainnet",
+    "destination": "0x0000000000000000000000000000000000000002",
+    "amount": "10",
+    "time": 1700000000000
+  },
+  "actionHash": null,
+  "signature": {
+    "r": "0x52304f49860dce6c823d21e08f152229c10354124680fbb1e7a819f1bcd488db",
+    "s": "0x2340155675f6073fda51fdc7098ff9074e7d1f972ca633af511ad908fca32d9f",
+    "v": 28
+  },
+  "userSigned": {
+    "type": "HyperliquidTransaction:UsdSend",
+    "chainId": 42161
+  }
+}
