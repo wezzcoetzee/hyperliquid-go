@@ -1,0 +1,1 @@
+{"name":"VaultX","vaultAddress":"0xabc","leader":"0xdef","description":"","portfolio":[],"apr":0.5,"followerState":null,"leaderFraction":0.1,"leaderCommission":0.1,"followers":[],"maxDistributable":"100","maxWithdrawable":"100","isClosed":false,"allowDeposits":true,"alwaysCloseOnWithdraw":false}
