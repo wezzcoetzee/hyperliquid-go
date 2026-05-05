@@ -136,7 +136,7 @@ func TestActionHash_OrderL1(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got, err := ActionHash(action, nonce, nil)
+	got, err := ActionHash(action, nonce, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,7 +155,7 @@ func TestActionHash_CancelL1(t *testing.T) {
 
 	nonce, _ := strconv.ParseUint(f.Nonce, 10, 64)
 
-	got, err := ActionHash(action, nonce, nil)
+	got, err := ActionHash(action, nonce, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -164,10 +164,43 @@ func TestActionHash_CancelL1(t *testing.T) {
 	}
 }
 
-func TestActionHash_RejectsBadVault(t *testing.T) {
+func TestActionHash_VaultChangesHash(t *testing.T) {
 	m := msgpack.NewOrderedMap()
 	m.Set("type", "noop")
-	if _, err := ActionHash(m, 1, []byte{0x01, 0x02}); err == nil {
-		t.Fatal("expected error for short vault")
+
+	noVault, err := ActionHash(m, 1, nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var vault [20]byte
+	for i := range vault {
+		vault[i] = byte(i + 1)
+	}
+	withVault, err := ActionHash(m, 1, &vault, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if bytes.Equal(noVault, withVault) {
+		t.Fatal("vault must change the hash")
+	}
+}
+
+func TestActionHash_ExpiresAfterChangesHash(t *testing.T) {
+	m := msgpack.NewOrderedMap()
+	m.Set("type", "noop")
+
+	base, err := ActionHash(m, 1, nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	exp := uint64(1700000000000)
+	withExp, err := ActionHash(m, 1, nil, &exp)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bytes.Equal(base, withExp) {
+		t.Fatal("expiresAfter must change the hash")
 	}
 }

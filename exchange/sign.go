@@ -2,21 +2,21 @@ package exchange
 
 import (
 	"encoding/binary"
-	"errors"
 
 	"golang.org/x/crypto/sha3"
 
 	"github.com/wezzcoetzee/hyperliquid/internal/msgpack"
 )
 
-// ActionHash returns keccak256(msgpack(action) || nonce_be8 || vault_marker[||addr20]).
-// Per the TS SDK: vault marker is 0x00 when no vault; otherwise 0x01 followed by
-// the 20-byte vault address. Currently does NOT support the optional
-// expiresAfter trailer; callers that need it must extend this helper.
-func ActionHash(action *msgpack.OrderedMap, nonce uint64, vault []byte) ([]byte, error) {
-	if vault != nil && len(vault) != 20 {
-		return nil, errors.New("exchange: vault must be 20 bytes or nil")
-	}
+// ActionHash returns the L1 action hash used by Hyperliquid's signing scheme.
+//
+//	keccak256( msgpack(action) || nonce_be8
+//	           || (vault ? 0x01 || addr20 : 0x00)
+//	           || (expiresAfter ? 0x00 || expiresAfter_be8 : ε) )
+//
+// The expiresAfter trailer is OMITTED entirely when nil — not zero-padded —
+// matching the TS SDK's createL1ActionHash helper.
+func ActionHash(action *msgpack.OrderedMap, nonce uint64, vault *[20]byte, expiresAfter *uint64) ([]byte, error) {
 	encoded, err := msgpack.Encode(action)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,13 @@ func ActionHash(action *msgpack.OrderedMap, nonce uint64, vault []byte) ([]byte,
 		h.Write([]byte{0x00})
 	} else {
 		h.Write([]byte{0x01})
-		h.Write(vault)
+		h.Write(vault[:])
+	}
+	if expiresAfter != nil {
+		var ea [8]byte
+		binary.BigEndian.PutUint64(ea[:], *expiresAfter)
+		h.Write([]byte{0x00})
+		h.Write(ea[:])
 	}
 	return h.Sum(nil), nil
 }
