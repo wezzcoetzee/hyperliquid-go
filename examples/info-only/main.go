@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/wezzcoetzee/hyperliquid"
+	"github.com/wezzcoetzee/hyperliquid-go"
 )
 
 func main() {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/wezzcoetzee/hyperliquid/signer/privkey"
+	"github.com/wezzcoetzee/hyperliquid-go/signer/privkey"
 )
 
 func newPK(t *testing.T) *privkey.PrivKey {

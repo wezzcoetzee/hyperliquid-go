@@ -9,8 +9,8 @@ import (
 	"context"
 	"encoding/hex"
 
-	"github.com/wezzcoetzee/hyperliquid/internal/msgpack"
-	"github.com/wezzcoetzee/hyperliquid/signer"
+	"github.com/wezzcoetzee/hyperliquid-go/internal/msgpack"
+	"github.com/wezzcoetzee/hyperliquid-go/signer"
 )
 
 // MultiSigParams wraps an inner action with N co-signer signatures.

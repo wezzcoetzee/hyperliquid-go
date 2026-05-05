@@ -3,7 +3,7 @@ package exchange
 import (
 	"context"
 
-	"github.com/wezzcoetzee/hyperliquid/internal/msgpack"
+	"github.com/wezzcoetzee/hyperliquid-go/internal/msgpack"
 )
 
 // ApproveAgent authorizes an agent wallet to sign L1 actions on the user's behalf.

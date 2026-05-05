@@ -9,8 +9,8 @@ import (
 
 	"golang.org/x/crypto/sha3"
 
-	"github.com/wezzcoetzee/hyperliquid/internal/msgpack"
-	"github.com/wezzcoetzee/hyperliquid/signer"
+	"github.com/wezzcoetzee/hyperliquid-go/internal/msgpack"
+	"github.com/wezzcoetzee/hyperliquid-go/signer"
 )
 
 // ErrNoSigner is returned when a signing call is made without a Signer wired

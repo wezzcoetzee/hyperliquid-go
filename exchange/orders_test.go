@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/wezzcoetzee/hyperliquid/signer/privkey"
+	"github.com/wezzcoetzee/hyperliquid-go/signer/privkey"
 )
 
 func TestBuildOrderAction_MatchesFixtureHash(t *testing.T) {

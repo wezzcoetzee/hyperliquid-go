@@ -2,8 +2,8 @@
 package exchange
 
 import (
-	"github.com/wezzcoetzee/hyperliquid/signer"
-	"github.com/wezzcoetzee/hyperliquid/transport"
+	"github.com/wezzcoetzee/hyperliquid-go/signer"
+	"github.com/wezzcoetzee/hyperliquid-go/transport"
 )
 
 // Client is the signed /exchange client. Construct via hyperliquid.New.

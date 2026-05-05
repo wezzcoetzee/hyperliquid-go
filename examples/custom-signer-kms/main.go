@@ -10,7 +10,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/wezzcoetzee/hyperliquid/signer"
+	"github.com/wezzcoetzee/hyperliquid-go/signer"
 )
 
 type kmsSigner struct {

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/wezzcoetzee/hyperliquid/signer/privkey"
-	"github.com/wezzcoetzee/hyperliquid/transport"
+	"github.com/wezzcoetzee/hyperliquid-go/signer/privkey"
+	"github.com/wezzcoetzee/hyperliquid-go/transport"
 )
 
 // TestIntegration_TestnetOrderCancel places a way-out-of-market limit order

@@ -1,4 +1,4 @@
-module github.com/wezzcoetzee/hyperliquid
+module github.com/wezzcoetzee/hyperliquid-go
 
 go 1.24.0
 

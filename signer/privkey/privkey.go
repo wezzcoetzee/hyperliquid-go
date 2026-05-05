@@ -13,8 +13,8 @@ import (
 
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/wezzcoetzee/hyperliquid/internal/eip712"
-	"github.com/wezzcoetzee/hyperliquid/signer"
+	"github.com/wezzcoetzee/hyperliquid-go/internal/eip712"
+	"github.com/wezzcoetzee/hyperliquid-go/signer"
 )
 
 type PrivKey struct {

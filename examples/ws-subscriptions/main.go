@@ -13,8 +13,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/wezzcoetzee/hyperliquid"
-	"github.com/wezzcoetzee/hyperliquid/ws"
+	"github.com/wezzcoetzee/hyperliquid-go"
+	"github.com/wezzcoetzee/hyperliquid-go/ws"
 )
 
 func main() {

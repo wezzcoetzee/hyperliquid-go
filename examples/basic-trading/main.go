@@ -10,9 +10,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/wezzcoetzee/hyperliquid"
-	"github.com/wezzcoetzee/hyperliquid/exchange"
-	"github.com/wezzcoetzee/hyperliquid/signer/privkey"
+	"github.com/wezzcoetzee/hyperliquid-go"
+	"github.com/wezzcoetzee/hyperliquid-go/exchange"
+	"github.com/wezzcoetzee/hyperliquid-go/signer/privkey"
 )
 
 func main() {

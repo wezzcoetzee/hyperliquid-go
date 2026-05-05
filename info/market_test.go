@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/wezzcoetzee/hyperliquid/transport"
+	"github.com/wezzcoetzee/hyperliquid-go/transport"
 )
 
 // newTestClient creates an info.Client wired to a one-off httptest.Server.

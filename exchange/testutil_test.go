@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/wezzcoetzee/hyperliquid/signer"
-	"github.com/wezzcoetzee/hyperliquid/transport"
+	"github.com/wezzcoetzee/hyperliquid-go/signer"
+	"github.com/wezzcoetzee/hyperliquid-go/transport"
 )
 
 func newExchangeTestClient(t *testing.T, s signer.Signer, source Source, sigChainID uint64, respond func(map[string]any) any) (*Client, *httptest.Server) {

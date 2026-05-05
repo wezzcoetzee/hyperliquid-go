@@ -9,7 +9,7 @@ Pre-1.0. The Info, Exchange, and WebSocket clients are feature-complete with ful
 ## Install
 
 ```bash
-go get github.com/wezzcoetzee/hyperliquid
+go get github.com/wezzcoetzee/hyperliquid-go
 ```
 
 Requires Go 1.24+.

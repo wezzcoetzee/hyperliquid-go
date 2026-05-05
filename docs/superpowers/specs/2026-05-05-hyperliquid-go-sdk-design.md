@@ -1,7 +1,7 @@
 # Hyperliquid Go SDK — Design
 
 **Date:** 2026-05-05
-**Module:** `github.com/wezzcoetzee/hyperliquid`
+**Module:** `github.com/wezzcoetzee/hyperliquid-go`
 **Go version:** 1.22+
 **Goal:** Full-parity Go port of [`nktkas/hyperliquid`](https://github.com/nktkas/hyperliquid) (TypeScript SDK), usable as a library by Go applications.
 

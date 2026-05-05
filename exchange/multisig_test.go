@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/wezzcoetzee/hyperliquid/internal/msgpack"
-	"github.com/wezzcoetzee/hyperliquid/signer"
+	"github.com/wezzcoetzee/hyperliquid-go/internal/msgpack"
+	"github.com/wezzcoetzee/hyperliquid-go/signer"
 )
 
 func TestClient_MultiSig_BuildsEnvelope(t *testing.T) {

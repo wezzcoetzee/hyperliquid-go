@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/wezzcoetzee/hyperliquid/transport"
+	"github.com/wezzcoetzee/hyperliquid-go/transport"
 )
 
 type fakeWSConn struct {

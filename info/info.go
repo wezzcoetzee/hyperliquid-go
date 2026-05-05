@@ -7,7 +7,7 @@ package info
 import (
 	"context"
 
-	"github.com/wezzcoetzee/hyperliquid/transport"
+	"github.com/wezzcoetzee/hyperliquid-go/transport"
 )
 
 // Client is the read-only /info client. Construct via hyperliquid.New.
