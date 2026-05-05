@@ -3,12 +3,18 @@ package exchange
 import (
 	"context"
 	"encoding/binary"
+	"errors"
 
 	"golang.org/x/crypto/sha3"
 
 	"github.com/wezzcoetzee/hyperliquid/internal/msgpack"
 	"github.com/wezzcoetzee/hyperliquid/signer"
 )
+
+// ErrNoSigner is returned when a signing call is made without a Signer wired
+// into the Client. Wrapped here rather than in the root package to avoid an
+// import cycle.
+var ErrNoSigner = errors.New("exchange: Signer required for write operations")
 
 const (
 	l1DomainName    = "Exchange"
@@ -43,6 +49,9 @@ const (
 )
 
 func BuildL1Signature(ctx context.Context, s signer.Signer, action *msgpack.OrderedMap, nonce uint64, vault *[20]byte, expiresAfter *uint64, source Source) (signer.Signature, error) {
+	if s == nil {
+		return signer.Signature{}, ErrNoSigner
+	}
 	hash, err := ActionHash(action, nonce, vault, expiresAfter)
 	if err != nil {
 		return signer.Signature{}, err
@@ -60,6 +69,9 @@ func BuildL1Signature(ctx context.Context, s signer.Signer, action *msgpack.Orde
 }
 
 func BuildUserSignature(ctx context.Context, s signer.Signer, primaryType string, fields []signer.Field, message map[string]any, signatureChainID uint64) (signer.Signature, error) {
+	if s == nil {
+		return signer.Signature{}, ErrNoSigner
+	}
 	types := signer.Types{
 		"EIP712Domain": l1AgentTypes["EIP712Domain"],
 		primaryType:    fields,

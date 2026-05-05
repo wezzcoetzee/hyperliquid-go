@@ -347,3 +347,17 @@ func TestBuildUserSignature_UsdSendFixture(t *testing.T) {
 		t.Errorf("v mismatch: got %d want %d", sig.V, f.Signature.V)
 	}
 }
+
+func TestBuildL1Signature_NilSigner(t *testing.T) {
+	m := msgpack.NewOrderedMap()
+	m.Set("type", "noop")
+	if _, err := BuildL1Signature(context.Background(), nil, m, 1, nil, nil, SourceMainnet); !errors.Is(err, ErrNoSigner) {
+		t.Fatalf("expected ErrNoSigner, got %v", err)
+	}
+}
+
+func TestBuildUserSignature_NilSigner(t *testing.T) {
+	if _, err := BuildUserSignature(context.Background(), nil, "T", []signer.Field{{Name: "x", Type: "string"}}, map[string]any{"x": "y"}, 42161); !errors.Is(err, ErrNoSigner) {
+		t.Fatalf("expected ErrNoSigner, got %v", err)
+	}
+}

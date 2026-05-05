@@ -12,7 +12,7 @@ type Domain struct {
 	Name              string
 	Version           string
 	ChainID           uint64
-	VerifyingContract string // 0x-prefixed lowercase hex
+	VerifyingContract string // 0x-prefixed hex; case is normalized by the EIP-712 layer
 }
 
 // Field describes one entry in an EIP-712 type definition.
