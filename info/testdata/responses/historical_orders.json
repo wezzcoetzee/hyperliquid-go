@@ -1,0 +1,1 @@
+[{"order":{"coin":"BTC","limitPx":"30000","oid":12345,"side":"B","sz":"0","timestamp":1700000000000,"origSz":"0.1","orderType":"Limit","reduceOnly":false},"status":"filled","statusTimestamp":1700000000001}]
