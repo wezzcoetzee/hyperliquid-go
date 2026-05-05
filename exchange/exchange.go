@@ -1,8 +1,4 @@
-// Package exchange will implement signed Hyperliquid /exchange actions.
-//
-// This file currently contains only the Client shell so the root package can
-// reference it. Trading methods, the Signer wiring, nonce generator, and
-// signing pipeline are added in Plans 02 and 04.
+// Package exchange implements signed Hyperliquid /exchange actions.
 package exchange
 
 import (
@@ -11,8 +7,18 @@ import (
 )
 
 // Client is the signed /exchange client. Construct via hyperliquid.New.
-// Trading methods will be added in Plan 04.
+//
+// Source selects mainnet ("a") vs testnet ("b") for L1 signing.
+// SignatureChainID is the EIP-712 domain chainId for user-signed actions
+// (typically 42161 for Arbitrum mainnet, 421614 for Arbitrum Sepolia).
 type Client struct {
-	HTTP   transport.HTTP
-	Signer signer.Signer
+	HTTP             transport.HTTP
+	Signer           signer.Signer
+	Source           Source
+	SignatureChainID uint64
+
+	// VaultAddress, if set, signs every action on behalf of the vault.
+	VaultAddress *[20]byte
+
+	nonces nonceGen
 }

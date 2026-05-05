@@ -3,6 +3,8 @@ package exchange
 import (
 	"context"
 	"encoding/binary"
+	"encoding/hex"
+	"encoding/json"
 	"errors"
 
 	"golang.org/x/crypto/sha3"
@@ -118,4 +120,79 @@ func ActionHash(action *msgpack.OrderedMap, nonce uint64, vault *[20]byte, expir
 		h.Write(ea[:])
 	}
 	return h.Sum(nil), nil
+}
+
+// submitL1 signs and submits an L1 action to /exchange, decoding the inner
+// response body into out (skipped if out is nil).
+func (c *Client) submitL1(ctx context.Context, action *msgpack.OrderedMap, out any) error {
+	if c.Signer == nil {
+		return ErrNoSigner
+	}
+	nonce := c.nonces.next()
+	sig, err := BuildL1Signature(ctx, c.Signer, action, nonce, c.VaultAddress, nil, c.Source)
+	if err != nil {
+		return err
+	}
+	return c.send(ctx, action, nonce, sig, out)
+}
+
+// submitUser signs and submits a user-signed action. message must include
+// "time" set to the nonce (Hyperliquid embeds the nonce inside the action).
+func (c *Client) submitUser(ctx context.Context, action *msgpack.OrderedMap, primaryType string, fields []signer.Field, message map[string]any, out any) error {
+	if c.Signer == nil {
+		return ErrNoSigner
+	}
+	t, ok := message["time"].(uint64)
+	if !ok || t == 0 {
+		t = c.nonces.next()
+		message["time"] = t
+	}
+	sig, err := BuildUserSignature(ctx, c.Signer, primaryType, fields, message, c.SignatureChainID)
+	if err != nil {
+		return err
+	}
+	return c.send(ctx, action, t, sig, out)
+}
+
+// send POSTs the signed envelope to /exchange and decodes the inner response.
+// HTTP-level errors propagate from the transport. Successful HTTP with a
+// status:"err" body returns *ActionRejected.
+func (c *Client) send(ctx context.Context, action *msgpack.OrderedMap, nonce uint64, sig signer.Signature, out any) error {
+	body := map[string]any{
+		"action": msgpackActionAsJSON(action),
+		"nonce":  nonce,
+		"signature": map[string]any{
+			"r": "0x" + hex.EncodeToString(sig.R[:]),
+			"s": "0x" + hex.EncodeToString(sig.S[:]),
+			"v": int(sig.V),
+		},
+	}
+	if c.VaultAddress != nil {
+		body["vaultAddress"] = "0x" + hex.EncodeToString(c.VaultAddress[:])
+	}
+	var raw StatusResponse
+	if err := c.HTTP.PostJSON(ctx, "/exchange", body, &raw); err != nil {
+		return err
+	}
+	if raw.Status != "ok" {
+		return &ActionRejected{Action: actionType(action), Response: string(raw.Response)}
+	}
+	if out == nil {
+		return nil
+	}
+	return json.Unmarshal(raw.Response, out)
+}
+
+func actionType(m *msgpack.OrderedMap) string {
+	v, _ := m.Get("type")
+	s, _ := v.(string)
+	return s
+}
+
+// msgpackActionAsJSON renders an OrderedMap as a json.RawMessage preserving
+// insertion order. The HTTP layer json.Marshal would otherwise re-key-sort
+// our action.
+func msgpackActionAsJSON(m *msgpack.OrderedMap) json.RawMessage {
+	b, _ := msgpack.MarshalOrderedJSON(m)
+	return b
 }
