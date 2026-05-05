@@ -10,21 +10,28 @@ import (
 type Tif string
 
 const (
+	// TifGtc is Good-Till-Cancelled: the order rests until filled or explicitly cancelled.
 	TifGtc Tif = "Gtc"
+	// TifIoc is Immediate-Or-Cancel: any unfilled portion is cancelled immediately.
 	TifIoc Tif = "Ioc"
+	// TifAlo is Add-Liquidity-Only (post-only): the order is cancelled if it would cross.
 	TifAlo Tif = "Alo"
 )
 
 // LimitOrder is the limit-order order-type leaf.
 type LimitOrder struct {
+	// Tif is the time-in-force qualifier (Gtc, Ioc, or Alo).
 	Tif Tif
 }
 
 // TriggerOrder is the trigger-order order-type leaf (TP/SL).
 type TriggerOrder struct {
-	IsMarket  bool
+	// IsMarket indicates the trigger fills as a market order (true) or limit order (false).
+	IsMarket bool
+	// TriggerPx is the trigger price as a decimal string.
 	TriggerPx string
-	Tpsl      string
+	// Tpsl is either "tp" (take-profit) or "sl" (stop-loss).
+	Tpsl string
 }
 
 // OrderType picks one of Limit or Trigger. Exactly one must be non-nil.
@@ -35,19 +42,28 @@ type OrderType struct {
 
 // OrderParams describes a single order in an Order request.
 type OrderParams struct {
-	Asset      uint32
-	IsBuy      bool
-	LimitPx    string
-	Sz         string
+	// Asset is the numeric asset index as returned by info.Meta.
+	Asset uint32
+	// IsBuy is true for a buy (long) order, false for a sell (short).
+	IsBuy bool
+	// LimitPx is the limit price as a decimal string.
+	LimitPx string
+	// Sz is the order size as a decimal string.
+	Sz string
+	// ReduceOnly constrains the order to only reduce an existing position.
 	ReduceOnly bool
-	OrderType  OrderType
-	Cloid      string
+	// OrderType selects limit or trigger order semantics; exactly one must be set.
+	OrderType OrderType
+	// Cloid is the optional 0x-prefixed 32-char hex client order id.
+	Cloid string
 }
 
 // Builder describes an optional builder-fee recipient for the action.
 type Builder struct {
+	// Address is the builder's 0x-prefixed Ethereum address.
 	Address string
-	Fee     int
+	// Fee is the builder fee in tenths of a basis point (e.g. 10 == 1 bps).
+	Fee int
 }
 
 // OrderRequest groups one or more orders with a grouping mode and optional builder.

@@ -41,9 +41,12 @@ func (c *Client) Meta(ctx context.Context) (*Meta, error) {
 
 // L2Level is one price level in the L2 order book.
 type L2Level struct {
+	// Px is the price as a decimal string.
 	Px string `json:"px"`
+	// Sz is the aggregate size at this price level as a decimal string.
 	Sz string `json:"sz"`
-	N  int    `json:"n"`
+	// N is the number of resting orders at this level.
+	N int `json:"n"`
 }
 
 // L2Book is a snapshot of a coin's order book; Levels[0] is bids, Levels[1] is asks.
@@ -64,14 +67,23 @@ func (c *Client) L2Book(ctx context.Context, coin string) (*L2Book, error) {
 
 // Candle is a single OHLCV bar.
 type Candle struct {
-	T int64  `json:"t"`
+	// T is the candle open timestamp in milliseconds.
+	T int64 `json:"t"`
+	// C is the close price as a decimal string.
 	C string `json:"c"`
+	// H is the high price as a decimal string.
 	H string `json:"h"`
+	// L is the low price as a decimal string.
 	L string `json:"l"`
+	// O is the open price as a decimal string.
 	O string `json:"o"`
+	// V is the volume as a decimal string.
 	V string `json:"v"`
-	N int    `json:"n"`
+	// N is the number of trades in the bar.
+	N int `json:"n"`
+	// I is the candle interval string (e.g. "1m", "1h"); omitted in snapshots.
 	I string `json:"i,omitempty"`
+	// S is the coin/symbol; omitted in snapshots.
 	S string `json:"s,omitempty"`
 }
 

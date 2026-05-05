@@ -29,24 +29,31 @@ func (a Address) Hex() string {
 	return "0x" + hex.EncodeToString(a[:])
 }
 
+// String returns the same value as Hex (lowercase 0x-prefixed hex).
 func (a Address) String() string { return a.Hex() }
 
 // Side identifies an order direction. Hyperliquid encodes Buy as "B" and Sell as "A".
 type Side string
 
 const (
-	Buy  Side = "B"
+	// Buy is a buy (long) order side, encoded as "B" on the wire.
+	Buy Side = "B"
+	// Sell is a sell (short) order side, encoded as "A" on the wire.
 	Sell Side = "A"
 )
 
+// String returns the wire representation ("B" or "A").
 func (s Side) String() string { return string(s) }
 
 // Tif is a time-in-force qualifier for limit orders.
 type Tif string
 
 const (
+	// TifGtc is Good-Till-Cancelled: the order rests until filled or explicitly cancelled.
 	TifGtc Tif = "Gtc"
+	// TifIoc is Immediate-Or-Cancel: any unfilled portion is cancelled immediately.
 	TifIoc Tif = "Ioc"
+	// TifAlo is Add-Liquidity-Only (post-only): the order is cancelled if it would cross.
 	TifAlo Tif = "Alo"
 )
 

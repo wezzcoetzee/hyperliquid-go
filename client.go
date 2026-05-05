@@ -45,10 +45,15 @@ type Config struct {
 //
 // Client is safe for concurrent use.
 type Client struct {
-	Network       Network
-	Signer        signer.Signer
-	Info          *info.Client
-	Exchange      *exchange.Client
+	// Network identifies the environment (Mainnet or Testnet) this client targets.
+	Network Network
+	// Signer is the key used to sign Exchange write actions; nil if constructed without one.
+	Signer signer.Signer
+	// Info provides access to all read-only /info endpoints.
+	Info *info.Client
+	// Exchange provides access to all signed /exchange write actions.
+	Exchange *exchange.Client
+	// Subscriptions provides the multiplexed WebSocket subscription client.
 	Subscriptions *ws.Client
 }
 

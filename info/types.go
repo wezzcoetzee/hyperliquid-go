@@ -65,8 +65,10 @@ type SpotClearinghouseState struct {
 type OpenOrder struct {
 	Coin      string `json:"coin"`
 	LimitPx   string `json:"limitPx"`
-	Oid       uint64 `json:"oid"`
-	Side      string `json:"side"`
+	// Oid is the numeric order id assigned by the exchange.
+	Oid  uint64 `json:"oid"`
+	Side string `json:"side"`
+	// Sz is the remaining unfilled size as a decimal string.
 	Sz        string `json:"sz"`
 	Timestamp int64  `json:"timestamp"`
 }
@@ -112,9 +114,12 @@ type LedgerEntry struct {
 
 // UserRateLimit summarizes the caller's current rate-limit budget.
 type UserRateLimit struct {
-	CumVlm        string `json:"cumVlm"`
-	NRequestsUsed int    `json:"nRequestsUsed"`
-	NRequestsCap  int    `json:"nRequestsCap"`
+	// CumVlm is the cumulative notional volume used for rate-limit tier calculation.
+	CumVlm string `json:"cumVlm"`
+	// NRequestsUsed is the number of API requests consumed in the current window.
+	NRequestsUsed int `json:"nRequestsUsed"`
+	// NRequestsCap is the maximum number of requests allowed in the current window.
+	NRequestsCap int `json:"nRequestsCap"`
 }
 
 // OrderStatusResponse mirrors the orderStatus endpoint return shape.

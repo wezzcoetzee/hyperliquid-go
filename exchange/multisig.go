@@ -21,12 +21,18 @@ import (
 // InnerActionHash is the L1 action hash of the inner action (computed via
 // ActionHash); the outer envelope signs over a payload containing it.
 type MultiSigParams struct {
-	MultiSigUser    string
-	OuterSigner     string
-	InnerAction     *msgpack.OrderedMap
-	InnerNonce      uint64
+	// MultiSigUser is the 0x-prefixed multi-sig wallet address whose threshold signatures are provided.
+	MultiSigUser string
+	// OuterSigner is the 0x-prefixed address of the caller who signs the outer envelope.
+	OuterSigner string
+	// InnerAction is the pre-built L1 action that the co-signers have signed.
+	InnerAction *msgpack.OrderedMap
+	// InnerNonce is the nonce embedded in the inner action (used for the inner action hash).
+	InnerNonce uint64
+	// InnerSignatures are the co-signer signatures over the inner action hash, in threshold order.
 	InnerSignatures []signer.Signature
-	VaultAddress    *[20]byte
+	// VaultAddress, if non-nil, directs the inner action to be applied to the named vault.
+	VaultAddress *[20]byte
 }
 
 // MultiSig submits a multiSig wrapper. The action body shape is documented in

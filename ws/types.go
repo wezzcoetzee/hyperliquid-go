@@ -19,9 +19,12 @@ type AllMidsEvent struct {
 
 // L2Level is one price level in an L2BookEvent.
 type L2Level struct {
+	// Px is the price as a decimal string.
 	Px string `json:"px"`
+	// Sz is the aggregate size at this level as a decimal string.
 	Sz string `json:"sz"`
-	N  int    `json:"n"`
+	// N is the number of resting orders at this level.
+	N int `json:"n"`
 }
 
 // L2BookEvent is the payload for the l2Book channel.
@@ -38,14 +41,23 @@ type Notification struct {
 
 // CandleEvent is the payload for the candle channel.
 type CandleEvent struct {
-	T int64  `json:"t"`
+	// T is the candle open timestamp in milliseconds.
+	T int64 `json:"t"`
+	// C is the close price as a decimal string.
 	C string `json:"c"`
+	// H is the high price as a decimal string.
 	H string `json:"h"`
+	// L is the low price as a decimal string.
 	L string `json:"l"`
+	// O is the open price as a decimal string.
 	O string `json:"o"`
+	// V is the volume as a decimal string.
 	V string `json:"v"`
-	N int    `json:"n"`
+	// N is the number of trades in the candle.
+	N int `json:"n"`
+	// I is the candle interval string (e.g. "1m", "1h").
 	I string `json:"i"`
+	// S is the coin/symbol for the candle.
 	S string `json:"s"`
 }
 
@@ -99,14 +111,14 @@ type LedgerUpdate struct {
 	Delta map[string]any `json:"delta"`
 }
 
-// UserFundingsEvent payload.
+// UserFundingsEvent is the payload for the userFundings channel.
 type UserFundingsEvent struct {
 	User       string         `json:"user"`
 	Fundings   []LedgerUpdate `json:"fundings"`
 	IsSnapshot bool           `json:"isSnapshot,omitempty"`
 }
 
-// UserLedgerEvent payload (non-funding ledger updates).
+// UserLedgerEvent is the payload for the userNonFundingLedgerUpdates channel.
 type UserLedgerEvent struct {
 	User       string         `json:"user"`
 	Updates    []LedgerUpdate `json:"nonFundingLedgerUpdates"`
@@ -134,14 +146,14 @@ type TwapSliceFill struct {
 	TwapID uint64 `json:"twapId"`
 }
 
-// TwapSliceFillsEvent payload.
+// TwapSliceFillsEvent is the payload for the twapSliceFills channel.
 type TwapSliceFillsEvent struct {
 	User           string          `json:"user"`
 	TwapSliceFills []TwapSliceFill `json:"twapSliceFills"`
 	IsSnapshot     bool            `json:"isSnapshot,omitempty"`
 }
 
-// TwapHistoryEvent payload.
+// TwapHistoryEvent is the payload for the twapHistory channel.
 type TwapHistoryEvent struct {
 	User       string           `json:"user"`
 	History    []map[string]any `json:"history"`

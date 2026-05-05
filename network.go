@@ -8,10 +8,13 @@ package hyperliquid
 type Network int
 
 const (
+	// Mainnet targets the production Hyperliquid network (Arbitrum One, chainId 42161).
 	Mainnet Network = iota
+	// Testnet targets the Hyperliquid test network (Arbitrum Sepolia, chainId 421614).
 	Testnet
 )
 
+// HTTPURL returns the base REST API URL for the network.
 func (n Network) HTTPURL() string {
 	switch n {
 	case Testnet:
@@ -21,6 +24,7 @@ func (n Network) HTTPURL() string {
 	}
 }
 
+// WSURL returns the WebSocket endpoint URL for the network.
 func (n Network) WSURL() string {
 	switch n {
 	case Testnet:
@@ -30,6 +34,7 @@ func (n Network) WSURL() string {
 	}
 }
 
+// SignatureChainID returns the EIP-712 domain chainId for the network.
 func (n Network) SignatureChainID() uint64 {
 	switch n {
 	case Testnet:
@@ -39,6 +44,7 @@ func (n Network) SignatureChainID() uint64 {
 	}
 }
 
+// String returns "mainnet" or "testnet".
 func (n Network) String() string {
 	if n == Testnet {
 		return "testnet"

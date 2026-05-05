@@ -43,10 +43,13 @@ type FilledOrder struct {
 // status:"err". The Hyperliquid API uses this for per-action validation
 // failures (e.g., bad tick size, insufficient margin).
 type ActionRejected struct {
-	Action   string
+	// Action is the action type string that was rejected (e.g. "order").
+	Action string
+	// Response is the raw rejection message returned by the API.
 	Response string
 }
 
+// Error implements the error interface.
 func (e *ActionRejected) Error() string {
 	return "exchange: action " + e.Action + " rejected: " + e.Response
 }

@@ -73,10 +73,13 @@ func (h *DefaultHTTP) PostJSON(ctx context.Context, path string, body any, out a
 // TransportAPIError is returned for non-2xx HTTP responses. The root package
 // wraps this into hyperliquid.APIError to avoid an import cycle.
 type TransportAPIError struct {
+	// Status is the HTTP response status code.
 	Status int
-	Body   string
+	// Body is the raw response body text.
+	Body string
 }
 
+// Error implements the error interface.
 func (e *TransportAPIError) Error() string {
 	return fmt.Sprintf("http %d: %s", e.Status, e.Body)
 }

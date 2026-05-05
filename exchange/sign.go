@@ -46,10 +46,16 @@ var l1AgentTypes = signer.Types{
 type Source string
 
 const (
+	// SourceMainnet is the L1 Agent.source value for mainnet.
 	SourceMainnet Source = "a"
+	// SourceTestnet is the L1 Agent.source value for testnet.
 	SourceTestnet Source = "b"
 )
 
+// BuildL1Signature constructs the EIP-712 L1 Agent signature for an action. It
+// computes the action hash via ActionHash and signs it with the Agent primary
+// type. Pass vault non-nil to sign on behalf of a vault address; pass
+// expiresAfter non-nil to include an expiry trailer in the hash.
 func BuildL1Signature(ctx context.Context, s signer.Signer, action *msgpack.OrderedMap, nonce uint64, vault *[20]byte, expiresAfter *uint64, source Source) (signer.Signature, error) {
 	if s == nil {
 		return signer.Signature{}, ErrNoSigner
@@ -70,6 +76,9 @@ func BuildL1Signature(ctx context.Context, s signer.Signer, action *msgpack.Orde
 	})
 }
 
+// BuildUserSignature constructs an EIP-712 user-signed action signature (e.g.
+// for UsdSend, SpotSend, Withdraw3). It uses the HyperliquidSignTransaction
+// domain with the network's EIP-712 chainId.
 func BuildUserSignature(ctx context.Context, s signer.Signer, primaryType string, fields []signer.Field, message map[string]any, signatureChainID uint64) (signer.Signature, error) {
 	if s == nil {
 		return signer.Signature{}, ErrNoSigner

@@ -13,6 +13,7 @@ const postTimeout = 10 * time.Second
 
 // PostResult is the decoded response payload from a WS post call.
 type PostResult struct {
+	// Response is the raw JSON response body returned by the server.
 	Response json.RawMessage
 }
 
