@@ -221,7 +221,35 @@ func TestBuildL1Signature_OrderFixture(t *testing.T) {
 	action := v.(*msgpack.OrderedMap)
 	nonce, _ := strconv.ParseUint(f.Nonce, 10, 64)
 
-	sig, err := BuildL1Signature(context.Background(), pk, action, nonce, nil, nil, true)
+	sig, err := BuildL1Signature(context.Background(), pk, action, nonce, nil, nil, SourceMainnet)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hex.EncodeToString(sig.R[:]) != stripHexPrefix(f.Signature.R) {
+		t.Errorf("r mismatch: got %x want %s", sig.R, f.Signature.R)
+	}
+	if hex.EncodeToString(sig.S[:]) != stripHexPrefix(f.Signature.S) {
+		t.Errorf("s mismatch: got %x want %s", sig.S, f.Signature.S)
+	}
+	if int(sig.V) != f.Signature.V {
+		t.Errorf("v mismatch: got %d want %d", sig.V, f.Signature.V)
+	}
+}
+
+func TestBuildL1Signature_OrderTestnetFixture(t *testing.T) {
+	f := loadFixture(t, "order_l1_testnet")
+	pk, err := privkey.New(f.PrivateKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, err := orderedFromJSON(f.Action)
+	if err != nil {
+		t.Fatal(err)
+	}
+	action := v.(*msgpack.OrderedMap)
+	nonce, _ := strconv.ParseUint(f.Nonce, 10, 64)
+
+	sig, err := BuildL1Signature(context.Background(), pk, action, nonce, nil, nil, SourceTestnet)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -243,7 +271,7 @@ func TestBuildL1Signature_CancelFixture(t *testing.T) {
 	action := v.(*msgpack.OrderedMap)
 	nonce, _ := strconv.ParseUint(f.Nonce, 10, 64)
 
-	sig, err := BuildL1Signature(context.Background(), pk, action, nonce, nil, nil, true)
+	sig, err := BuildL1Signature(context.Background(), pk, action, nonce, nil, nil, SourceMainnet)
 	if err != nil {
 		t.Fatal(err)
 	}

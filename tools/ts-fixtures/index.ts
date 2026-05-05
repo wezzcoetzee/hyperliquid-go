@@ -64,6 +64,27 @@ function writeFixture(name: string, fx: Fixture) {
   });
 }
 
+// ---- order_l1_testnet ---------------------------------------------------
+{
+  const action = {
+    type: "order",
+    orders: [
+      { a: 0, b: true, p: "30000", s: "0.1", r: false, t: { limit: { tif: "Gtc" } } },
+    ],
+    grouping: "na",
+  } as const;
+  const actionHash = createL1ActionHash({ action, nonce: NONCE });
+  const signature = await signL1Action({ wallet, action, nonce: NONCE, isTestnet: true });
+  writeFixture("order_l1_testnet", {
+    privateKey: PK,
+    nonce: String(NONCE),
+    action: action as unknown as Record<string, unknown>,
+    actionHash,
+    signature: { r: signature.r, s: signature.s, v: signature.v },
+    userSigned: null,
+  });
+}
+
 // ---- cancel_l1 ----------------------------------------------------------
 {
   const action = {

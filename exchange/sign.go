@@ -33,14 +33,19 @@ var l1AgentTypes = signer.Types{
 	},
 }
 
-func BuildL1Signature(ctx context.Context, s signer.Signer, action *msgpack.OrderedMap, nonce uint64, vault *[20]byte, expiresAfter *uint64, mainnet bool) (signer.Signature, error) {
+// Source identifies the EIP-712 Agent.source byte used for L1 signing.
+// Hyperliquid uses "a" on mainnet and "b" on testnet.
+type Source string
+
+const (
+	SourceMainnet Source = "a"
+	SourceTestnet Source = "b"
+)
+
+func BuildL1Signature(ctx context.Context, s signer.Signer, action *msgpack.OrderedMap, nonce uint64, vault *[20]byte, expiresAfter *uint64, source Source) (signer.Signature, error) {
 	hash, err := ActionHash(action, nonce, vault, expiresAfter)
 	if err != nil {
 		return signer.Signature{}, err
-	}
-	source := "b"
-	if mainnet {
-		source = "a"
 	}
 	domain := signer.Domain{
 		Name:              l1DomainName,
@@ -49,7 +54,7 @@ func BuildL1Signature(ctx context.Context, s signer.Signer, action *msgpack.Orde
 		VerifyingContract: zeroAddress,
 	}
 	return s.SignTypedData(ctx, domain, l1AgentTypes, "Agent", map[string]any{
-		"source":       source,
+		"source":       string(source),
 		"connectionId": hash,
 	})
 }
