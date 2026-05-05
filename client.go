@@ -53,11 +53,20 @@ func New(cfg Config) (*Client, error) {
 		baseURL = cfg.Network.HTTPURL()
 	}
 	httpTr := &wrappingHTTP{inner: transport.NewDefaultHTTP(baseURL, cfg.HTTP)}
+	exchClient := &exchange.Client{HTTP: httpTr, Signer: cfg.Signer}
+	switch cfg.Network {
+	case Testnet:
+		exchClient.Source = exchange.SourceTestnet
+		exchClient.SignatureChainID = 421614
+	default:
+		exchClient.Source = exchange.SourceMainnet
+		exchClient.SignatureChainID = 42161
+	}
 	return &Client{
 		Network:       cfg.Network,
 		Signer:        cfg.Signer,
 		Info:          &info.Client{HTTP: httpTr},
-		Exchange:      &exchange.Client{HTTP: httpTr, Signer: cfg.Signer},
+		Exchange:      exchClient,
 		Subscriptions: &ws.Client{},
 	}, nil
 }
