@@ -3,15 +3,16 @@ package exchange
 import (
 	"context"
 
-	"github.com/wezzcoetzee/hyperliquid/internal/msgpack"
+	"github.com/wezzcoetzee/hyperliquid-go/internal/msgpack"
 )
 
 // CDeposit deposits HYPE from the caller's spot wallet into the staking pool.
 // wei is the raw token amount.
 //
-// Note: validator-only actions (CSignerAction, CValidatorAction) are
-// intentionally not implemented. Their schemas are validator-internal and
-// likely to change; most users will never need them.
+// CSignerAction and CValidatorAction are explicitly out of scope for this SDK.
+// They are validator-operator-only actions targeting infrastructure operators,
+// not traders. See docs/superpowers/plans/2026-05-05-04-exchange.md for the
+// rationale.
 func (c *Client) CDeposit(ctx context.Context, wei uint64) error {
 	a := msgpack.NewOrderedMap()
 	a.Set("type", "cDeposit")
