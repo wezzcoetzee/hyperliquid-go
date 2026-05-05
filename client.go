@@ -29,7 +29,6 @@ type Config struct {
 	BaseURL string
 
 	// WSURL overrides Network.WSURL(). Used for tests and proxies.
-	// Currently accepted but unused; wired into the WebSocket client in Plan 05.
 	WSURL string
 }
 
@@ -52,6 +51,10 @@ func New(cfg Config) (*Client, error) {
 	if baseURL == "" {
 		baseURL = cfg.Network.HTTPURL()
 	}
+	wsURL := cfg.WSURL
+	if wsURL == "" {
+		wsURL = cfg.Network.WSURL()
+	}
 	httpTr := &wrappingHTTP{inner: transport.NewDefaultHTTP(baseURL, cfg.HTTP)}
 	exchClient := &exchange.Client{HTTP: httpTr, Signer: cfg.Signer}
 	switch cfg.Network {
@@ -67,7 +70,7 @@ func New(cfg Config) (*Client, error) {
 		Signer:        cfg.Signer,
 		Info:          &info.Client{HTTP: httpTr},
 		Exchange:      exchClient,
-		Subscriptions: &ws.Client{},
+		Subscriptions: &ws.Client{URL: wsURL},
 	}, nil
 }
 
