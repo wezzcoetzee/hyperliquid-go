@@ -5,10 +5,14 @@
 // signing pipeline are added in Plans 02 and 04.
 package exchange
 
-import "github.com/wezzcoetzee/hyperliquid/transport"
+import (
+	"github.com/wezzcoetzee/hyperliquid/signer"
+	"github.com/wezzcoetzee/hyperliquid/transport"
+)
 
 // Client is the signed /exchange client. Construct via hyperliquid.New.
 // Trading methods will be added in Plan 04.
 type Client struct {
-	HTTP transport.HTTP
+	HTTP   transport.HTTP
+	Signer signer.Signer
 }

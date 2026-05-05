@@ -1,0 +1,29 @@
+{
+  "privateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "nonce": "1700000000000",
+  "action": {
+    "type": "order",
+    "orders": [
+      {
+        "a": 0,
+        "b": true,
+        "p": "30000",
+        "s": "0.1",
+        "r": false,
+        "t": {
+          "limit": {
+            "tif": "Gtc"
+          }
+        }
+      }
+    ],
+    "grouping": "na"
+  },
+  "actionHash": "0x537978eabdd2256c41877b65c24b9c9bfd0f205be97f00e127e74593b58ab5d3",
+  "signature": {
+    "r": "0x027ee1580d794d3c5b1fe012957f7e2d40c113bbdb0595eb9ef1490de89a8092",
+    "s": "0x1b79fc842b964473b63d4d690d8924b0d8ce8a2b965165f2d155ae147a9680c4",
+    "v": 28
+  },
+  "userSigned": null
+}
