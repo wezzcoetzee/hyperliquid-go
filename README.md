@@ -89,6 +89,10 @@ All work with `errors.As` / `errors.Is`.
 
 `hyperliquid.Client` is safe for concurrent use. The HTTP transport is shared across method groups; the WebSocket connection is multiplexed across all active subscriptions and auto-reconnects with exponential backoff.
 
+## Roadmap
+
+- **POST-over-WebSocket for Info reads.** `ws.Client.Post` exposes the low-level primitive today, but `Config.WebSocketPosts` does not yet route Info HTTP calls through an open WS connection. Tracked as a follow-up. The optimization saves a TCP+TLS handshake per call and benefits clients polling Info endpoints in tight loops alongside an existing subscription; for typical usage, the HTTP transport is fine.
+
 ## Contributing
 
 To regenerate the TS-derived signing fixtures:
