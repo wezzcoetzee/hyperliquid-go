@@ -2,6 +2,7 @@ package exchange
 
 import (
 	"bytes"
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -12,6 +13,8 @@ import (
 	"testing"
 
 	"github.com/wezzcoetzee/hyperliquid/internal/msgpack"
+	"github.com/wezzcoetzee/hyperliquid/signer"
+	"github.com/wezzcoetzee/hyperliquid/signer/privkey"
 )
 
 type fixture struct {
@@ -202,5 +205,117 @@ func TestActionHash_ExpiresAfterChangesHash(t *testing.T) {
 	}
 	if bytes.Equal(base, withExp) {
 		t.Fatal("expiresAfter must change the hash")
+	}
+}
+
+func TestBuildL1Signature_OrderFixture(t *testing.T) {
+	f := loadFixture(t, "order_l1")
+	pk, err := privkey.New(f.PrivateKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, err := orderedFromJSON(f.Action)
+	if err != nil {
+		t.Fatal(err)
+	}
+	action := v.(*msgpack.OrderedMap)
+	nonce, _ := strconv.ParseUint(f.Nonce, 10, 64)
+
+	sig, err := BuildL1Signature(context.Background(), pk, action, nonce, nil, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hex.EncodeToString(sig.R[:]) != stripHexPrefix(f.Signature.R) {
+		t.Errorf("r mismatch: got %x want %s", sig.R, f.Signature.R)
+	}
+	if hex.EncodeToString(sig.S[:]) != stripHexPrefix(f.Signature.S) {
+		t.Errorf("s mismatch: got %x want %s", sig.S, f.Signature.S)
+	}
+	if int(sig.V) != f.Signature.V {
+		t.Errorf("v mismatch: got %d want %d", sig.V, f.Signature.V)
+	}
+}
+
+func TestBuildL1Signature_CancelFixture(t *testing.T) {
+	f := loadFixture(t, "cancel_l1")
+	pk, _ := privkey.New(f.PrivateKey)
+	v, _ := orderedFromJSON(f.Action)
+	action := v.(*msgpack.OrderedMap)
+	nonce, _ := strconv.ParseUint(f.Nonce, 10, 64)
+
+	sig, err := BuildL1Signature(context.Background(), pk, action, nonce, nil, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hex.EncodeToString(sig.R[:]) != stripHexPrefix(f.Signature.R) {
+		t.Errorf("r mismatch")
+	}
+	if hex.EncodeToString(sig.S[:]) != stripHexPrefix(f.Signature.S) {
+		t.Errorf("s mismatch")
+	}
+	if int(sig.V) != f.Signature.V {
+		t.Errorf("v mismatch: got %d want %d", sig.V, f.Signature.V)
+	}
+}
+
+func TestBuildUserSignature_UsdSendFixture(t *testing.T) {
+	f := loadFixture(t, "usd_send")
+	pk, _ := privkey.New(f.PrivateKey)
+
+	var actionFields map[string]json.RawMessage
+	if err := json.Unmarshal(f.Action, &actionFields); err != nil {
+		t.Fatal(err)
+	}
+
+	var hlChain, dest, amount string
+	if err := json.Unmarshal(actionFields["hyperliquidChain"], &hlChain); err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(actionFields["destination"], &dest); err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(actionFields["amount"], &amount); err != nil {
+		t.Fatal(err)
+	}
+	var n json.Number
+	if err := json.Unmarshal(actionFields["time"], &n); err != nil {
+		t.Fatal(err)
+	}
+	ti, _ := n.Int64()
+	time := uint64(ti)
+
+	fields := []signer.Field{
+		{Name: "hyperliquidChain", Type: "string"},
+		{Name: "destination", Type: "string"},
+		{Name: "amount", Type: "string"},
+		{Name: "time", Type: "uint64"},
+	}
+	msg := map[string]any{
+		"hyperliquidChain": hlChain,
+		"destination":      dest,
+		"amount":           amount,
+		"time":             time,
+	}
+
+	var us struct {
+		Type    string `json:"type"`
+		ChainID uint64 `json:"chainId"`
+	}
+	if err := json.Unmarshal(f.UserSigned, &us); err != nil {
+		t.Fatal(err)
+	}
+
+	sig, err := BuildUserSignature(context.Background(), pk, us.Type, fields, msg, us.ChainID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hex.EncodeToString(sig.R[:]) != stripHexPrefix(f.Signature.R) {
+		t.Errorf("r mismatch: got %x want %s", sig.R, f.Signature.R)
+	}
+	if hex.EncodeToString(sig.S[:]) != stripHexPrefix(f.Signature.S) {
+		t.Errorf("s mismatch: got %x want %s", sig.S, f.Signature.S)
+	}
+	if int(sig.V) != f.Signature.V {
+		t.Errorf("v mismatch: got %d want %d", sig.V, f.Signature.V)
 	}
 }
