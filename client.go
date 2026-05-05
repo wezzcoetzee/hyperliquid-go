@@ -7,15 +7,10 @@ import (
 
 	"github.com/wezzcoetzee/hyperliquid/exchange"
 	"github.com/wezzcoetzee/hyperliquid/info"
+	"github.com/wezzcoetzee/hyperliquid/signer"
 	"github.com/wezzcoetzee/hyperliquid/transport"
 	"github.com/wezzcoetzee/hyperliquid/ws"
 )
-
-// Signer is a placeholder until Plan 02 introduces the real signing interface
-// in a separate package. Callers should NOT rely on the current empty-interface
-// shape; once Plan 02 lands, Config.Signer will require methods (e.g., Address,
-// SignTypedData). Treat Config.Signer as an unstable field for now.
-type Signer interface{}
 
 // Config controls how a Client is constructed. The zero value has Network==Mainnet
 // (see Network's doc), no Signer, and the default *http.Client (30s timeout backstop).
@@ -25,7 +20,7 @@ type Config struct {
 
 	// Signer signs Exchange (write) actions. Required for client.Exchange writes;
 	// optional otherwise.
-	Signer Signer
+	Signer signer.Signer
 
 	// HTTP overrides the default *http.Client. Use to install proxies, retries, etc.
 	HTTP *http.Client
@@ -44,6 +39,7 @@ type Config struct {
 // Client is safe for concurrent use.
 type Client struct {
 	Network       Network
+	Signer        signer.Signer
 	Info          *info.Client
 	Exchange      *exchange.Client
 	Subscriptions *ws.Client
@@ -59,8 +55,9 @@ func New(cfg Config) (*Client, error) {
 	httpTr := &wrappingHTTP{inner: transport.NewDefaultHTTP(baseURL, cfg.HTTP)}
 	return &Client{
 		Network:       cfg.Network,
+		Signer:        cfg.Signer,
 		Info:          &info.Client{HTTP: httpTr},
-		Exchange:      &exchange.Client{HTTP: httpTr},
+		Exchange:      &exchange.Client{HTTP: httpTr, Signer: cfg.Signer},
 		Subscriptions: &ws.Client{},
 	}, nil
 }
