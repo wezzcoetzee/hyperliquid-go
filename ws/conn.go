@@ -8,8 +8,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/wezzcoetzee/hyperliquid/transport"
+	"github.com/wezzcoetzee/hyperliquid-go/transport"
 )
+
+// postDispatcher is called by the read loop when a "post" channel message arrives.
+// It is set by the ws.Client to correlate responses with pending Post calls.
+type postDispatcher func(id int64, data json.RawMessage, errMsg string)
 
 // Conn is a single multiplexed WebSocket connection. It owns one read
 // goroutine, one ping goroutine, and a write mutex (provided by WSConn).
@@ -30,6 +34,8 @@ type Conn struct {
 
 	rootCtx context.Context
 	cancel  context.CancelFunc
+
+	onPost postDispatcher
 }
 
 func newConn(parent context.Context, url string, d transport.WSDialer, r *registry) *Conn {
@@ -83,10 +89,23 @@ func (c *Conn) dispatch(msg []byte) {
 	var env struct {
 		Channel string          `json:"channel"`
 		Data    json.RawMessage `json:"data"`
+		ID      *int64          `json:"id"`
 	}
 	if err := json.Unmarshal(msg, &env); err != nil {
 		return
 	}
+
+	if env.Channel == "post" && env.ID != nil && c.onPost != nil {
+		var resp struct {
+			Type     string          `json:"type"`
+			Response json.RawMessage `json:"response"`
+			Error    string          `json:"error"`
+		}
+		_ = json.Unmarshal(env.Data, &resp)
+		c.onPost(*env.ID, resp.Response, resp.Error)
+		return
+	}
+
 	for _, sub := range c.registry.subscribers(env.Channel) {
 		sub.cb(env.Data)
 	}

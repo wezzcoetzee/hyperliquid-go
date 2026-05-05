@@ -5,11 +5,11 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/wezzcoetzee/hyperliquid/exchange"
-	"github.com/wezzcoetzee/hyperliquid/info"
-	"github.com/wezzcoetzee/hyperliquid/signer"
-	"github.com/wezzcoetzee/hyperliquid/transport"
-	"github.com/wezzcoetzee/hyperliquid/ws"
+	"github.com/wezzcoetzee/hyperliquid-go/exchange"
+	"github.com/wezzcoetzee/hyperliquid-go/info"
+	"github.com/wezzcoetzee/hyperliquid-go/signer"
+	"github.com/wezzcoetzee/hyperliquid-go/transport"
+	"github.com/wezzcoetzee/hyperliquid-go/ws"
 )
 
 // Config controls how a Client is constructed. The zero value has Network==Mainnet
@@ -30,6 +30,14 @@ type Config struct {
 
 	// WSURL overrides Network.WSURL(). Used for tests and proxies.
 	WSURL string
+
+	// WebSocketPosts routes Exchange POST requests through the WebSocket
+	// connection instead of HTTP. Requires the WebSocket connection to be
+	// established first (via a subscription or explicit dial).
+	//
+	// Note: WS-based posting is exposed as ws.Client.Post for now.
+	// Full HTTP-transport routing via WS is a planned follow-up.
+	WebSocketPosts bool
 }
 
 // Client is the top-level Hyperliquid SDK entry point. Its three method-group

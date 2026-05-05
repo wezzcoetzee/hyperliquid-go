@@ -14,7 +14,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/wezzcoetzee/hyperliquid/transport"
+	"github.com/wezzcoetzee/hyperliquid-go/transport"
 )
 
 // Client is the WebSocket subscription client. Construct via hyperliquid.New.
@@ -28,6 +28,9 @@ type Client struct {
 	once     sync.Once
 	conn     *Conn
 	registry *registry
+
+	postOnce sync.Once
+	posts    *postHub
 }
 
 func (c *Client) ensureStarted(ctx context.Context) error {
@@ -37,6 +40,7 @@ func (c *Client) ensureStarted(ctx context.Context) error {
 		}
 		c.registry = newRegistry()
 		c.conn = newConn(context.Background(), c.URL, c.Dialer, c.registry)
+		c.conn.onPost = c.deliverPostResponse
 	})
 	return c.conn.ensure(ctx)
 }
